@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#	sxpt main module.
+#	starts progname with sxpt environment variables
+#			a1fred...
+
+ROOT="/home/a1fred/Dropbox/Develop/sxpt/sxpt/trunk/sxpt"
+
+
+if [ -z "${1}" ]; then
+	echo -e "\E[1m;$0 progname args[]\E[0m;"
+	exit 0
+fi
+
+
+PATH="${PATH}:${ROOT}/sbin" ROOT=${ROOT} ${ROOT}/sbin/${@}
+
+
+

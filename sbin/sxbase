@@ -1,0 +1,114 @@
+#!/bin/bash
+
+#	This is sxpt part file.
+#	Executed with sxpt environment using sxpt script
+#			a1fred...
+
+. ${ROOT}/etc/sxpt/USE
+
+case ${1} in
+	search)
+	case ${2} in
+		name)
+		;;
+		file)
+		;;
+	esac
+	;;
+	add)
+	
+	if [ -z "$2" ]; then echo "Cant found PROGNAME. Read $(basename ${0}) help"; exit 1; fi
+	if [ -z "$3" ]; then echo "Cant found VERSION. Read $(basename ${0}) help"; exit 1; fi
+
+	progname="${2}"
+	version="${3}"
+	listingFile="${4}"
+	needsFile="${5}"
+	postUninstall="${6}"
+
+	if [ ! -r "${listingFile}" ]; then
+		echo "Cant read listing file. Rtfm."
+		exit 1
+	fi
+	if [ ! -r "${needsFile}" ]; then
+		echo "Cant read needs file. Rtfm."
+		exit 1
+	fi
+
+	if [ -d "${sxbase_dbdir}/${progname}/${version}" ]; then
+		echo -n "${progname} is already installed. Hit Control-C to abort, or Enter to continue... "
+		read ctne
+	fi
+
+	echo -n "Installing ${progname}-${version}...  ";
+
+	mkdir -p "${sxbase_dbdir}/${progname}/${version}"
+	cp "${listingFile}" "${sxbase_dbdir}/${progname}/${version}/listing"
+	cp "${needsFile}" "${sxbase_dbdir}/${progname}/${version}/needs"
+	
+	test -f "${postUninstall}" && cp "${postUninstall}" "${sxbase_dbdir}/${progname}/${version}/post-Uninstall.sh"
+
+	echo "ok"
+	exit 1
+	;;
+	rm)
+	if [ -z "${2}" ]; then echo "Cant found progname. Rtfm."; exit 1; fi
+	progname="${2}"
+	version="${3}"
+
+	if [ ! -d "${sxbase_dbdir}/${progname}" ]; then
+		echo "${progname} is not installed on this system."
+		exit 1
+	fi
+
+	if [ -z "${version}" ]; then
+		echo -n "Removing all versions of ${progname}... "
+		
+		all_versions=$(ls -1 "${sxbase_dbdir}/${progname}")
+
+		for version in ${all_versions}; do
+			if [ -f "${sxbase_dbdir}/${progname}/${version}/post-Uninstall.sh" ]; then
+				mkdir -p "${ROOT}/tmp/sxpt/"
+				mv "${sxbase_dbdir}/${progname}/${version}/post-Uninstall.sh" "${ROOT}/tmp/sxpt/${progname}-${version}-postUninstall.sh"
+			fi 
+			rm -rf "${sxbase_dbdir}/${progname}"
+		done
+		echo "ok"
+		exit 0
+	fi
+
+	if [ -f "${sxbase_dbdir}/${progname}/${version}/post-Uninstall.sh" ]; then
+			mkdir -p "${ROOT}/tmp/sxpt/"
+			mv "${sxbase_dbdir}/${progname}/${version}/post-Uninstall.sh" "${ROOT}/tmp/sxpt/${progname}-${version}-postUninstall.sh"
+			chmod a+x "${ROOT}/tmp/sxpt/${progname}-${version}-postUninstall.sh"
+
+	fi 
+	rm -rf "${sxbase_dbdir}/${progname}"
+
+	;;
+	help)
+		echo "Sxbase - part of sxpt. It's manage"
+		echo "list of installed programs."
+		echo ""
+		echo "Usage:"
+		echo ""
+		echo "sxbase search name PROGNAME [VERMIN] [VERMAX]"
+		echo "	search PROGNAME in db. Return 0 if exists."
+		echo ""
+		echo "sxbase search file PATH"
+		echo "	Show who own file in PATH. Return 1 if none."
+		echo ""
+		echo "sxbase add PROGNAME VERSION LISTINGFILE NEEDSFILE [POST-UNINSTALL SCRIPT]"
+		echo "Add programm to db."
+		echo ""
+		echo "sxbase rm PROGNAME [VERSION]"
+		echo "Remove programm from db."
+		echo "(c)		a1fred..."
+
+	;;
+	*)
+		echo "Read $(basename ${0}) help."
+		exit 0
+	;;
+esac
+	

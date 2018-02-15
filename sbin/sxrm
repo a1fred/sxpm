@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#	This is sxpt part file.
+#	Executed with sxpt environment using sxpt script
+#			a1fred...
+
+. ${ROOT}/etc/sxpt/USE
+
+
+
+
+

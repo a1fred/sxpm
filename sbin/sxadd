@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#	This is sxpt part file.
+#	Executed with sxpt environment using sxpt script
+#			a1fred...
+
+. ${ROOT}/etc/sxpt/USE
+
+if [ -z $1 ]; then
+	echo "Usage: $0 packet.tar.gz"
+	exit 0
+fi
+
+if [ ! -r ${1} ]; then
+	echo "$1 not readable"
+	exit 1
+fi
+
+read -p "Packet's name: " PacketName
+read -p "Packet's varsion: " PacketVer
+Branch="STABLE"
+
+TmpDir=`mktemp -d`
+tar -xf "${1}" -C "${TmpDir}" || exit 1
+PacketDir="${TmpDir}/`ls -1 ${TmpDir}`/"
+
+echo "All ok. Configuring $PacketName..."
+sxconf ${PacketDir} ${Branch} || exit 1
+
+echo "Configured. Making."
+sxmake ${PacketDir} ${Branch} || exit 1
+
+> "${PacketDir}/listing"
+> "${PacketDir}/needs"
+
+echo "sxbase add "${PacketName}" "${PacketVer}" "${PacketDir}/listing" "${PacketDir}/needs""
+sxbase add "${PacketName}" "${PacketVer}" "${PacketDir}/listing" "${PacketDir}/needs"
+
+rm -rf "${TmpDir}"
+# echo -ne "${PacketName} was installed on system.\n"
+exit 0

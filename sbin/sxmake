@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#	This is sxpt part file.
+#	Executed with sxpt environment using sxpt script
+#			a1fred...
+
+## TODO: Branching
+
+. ${ROOT}/etc/sxpt/USE
+
+if [ -d ${1} ]; then
+	pushd "${1}"
+	make || exit 1
+	make install || exit 1
+	popd
+	exit 0
+fi
+

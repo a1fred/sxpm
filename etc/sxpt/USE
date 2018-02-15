@@ -1,0 +1,18 @@
+#	sxpt configuration file
+
+# General config
+conf_dir=${ROOT}/etc/sxpt/sxpt.conf
+
+
+# Branching variables
+branch_dir=${conf_dir}/branches
+default_branch=stable
+
+
+# sxdb vars. Это до тех пор пока проф сука базу не напишет...
+sxbase_dbdir=${ROOT}/var/sxpt/sxbase/
+
+PATH="$PATH:/home/a1fred/Dropbox/Develop/sxpt/sxpt/trunk/sxpt/sbin/"
+
+#. ./sxpt.conf
+

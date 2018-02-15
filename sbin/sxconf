@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#	This is sxpt part file.
+#	Executed with sxpt environment using sxpt script
+#			a1fred...
+
+# TODO Branching
+
+. ${ROOT}/etc/sxpt/USE
+
+if [ -r "${1}/configure" ]; then
+	pushd "${1}"
+	./configure
+	popd
+	exit $?
+fi
+
+
